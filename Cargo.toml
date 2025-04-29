@@ -1,0 +1,51 @@
+[package]
+name = "table-rs"
+version = "0.0.0"
+edition = "2021"
+rust-version = "1.85"
+description = "📋 A highly customizable table component for WASM frameworks like Yew, Dioxus, and Leptos."
+license = "MIT"
+keywords = ["table", "yew", "rust", "dioxus", "leptos"]
+categories = ["web-programming", "gui"]
+repository = "https://github.com/opensass/table-rs"
+documentation = "https://docs.rs/table-rs/"
+authors = ["Mahmoud Harmouch <oss@wiseai.dev>"]
+exclude = ["/assets", "/examples"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+yew = { version = "0.21.0", default-features = false, optional = true }
+dioxus = { version = "0.6.3", optional = true }
+leptos = { version = "0.7.7", optional = true }
+wasm-bindgen-futures = "0.4.50"
+gloo-net = { version = "0.6.0", features = ["http"] }
+serde_json = "1.0.140"
+web-sys = { version = "0.3.77", features = ["Window"]}
+gloo-timers = "0.3.0"
+
+[features]
+yew = ["dep:yew"]
+dio = ["dioxus"]
+lep = ["leptos"]
+
+[profile.release]
+opt-level = "z"
+debug = false
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+incremental = false
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dev-dependencies]
+log = "0.4.27"
+bump2version = "0.1.6"
+maplit = "1.0.2"
