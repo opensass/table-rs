@@ -4072,7 +4072,7 @@ dependencies = [
 
 [[package]]
 name = "table-rs"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "bump2version",
  "dioxus",
