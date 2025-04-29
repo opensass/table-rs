@@ -59,7 +59,7 @@ Refer to [our guide](https://github.com/opensass/table-rs/blob/main/LEPTOS.md) t
 | Metric                          | TanStack Table (React) | Table RS (Yew + WASM) |
 |--------------------------------|-----------------------------|----------------------------|
 | **Page Load Time (1M rows)**   | ~10 seconds                 | ~2 seconds                 |
-| **Memory Heap Usage**          | >3 GB (heap overflow)       | ~1 MB (stable)             |
+| **Memory Heap Usage**          | >3 GB (heap overflow)       | ~1.1 GB (stable)             |
 | **Initial Rendering**          | Heavy blocking, slow DOM paint | Efficient, lightweight rendering |
 | **Browser Responsiveness**     | Delayed interactivity      | Smooth after hydration     |
 | **Sorting Performance**        | 2-4s for large columns     | Sub-1s due to WASM speed   |
@@ -76,7 +76,7 @@ Refer to [our guide](https://github.com/opensass/table-rs/blob/main/LEPTOS.md) t
 ### 🟩 Table RS (Yew + WASM)
 - WASM-compiled logic is highly memory-efficient and deterministic.
 - DOM rendering is direct, bypassing React's reconciliation.
-- Only ~1MB of memory heap used even with **1 million rows**.
+- ~1.1 GB of memory heap used even with **1 million rows**.
 - Built-in support for search/sort with stable paging.
 - No hydration issues (client-only generation).
 - Lighthouse performance significantly better, especially in CPU/Memory metrics.
