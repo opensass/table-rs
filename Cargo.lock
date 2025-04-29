@@ -4076,13 +4076,10 @@ version = "0.0.1"
 dependencies = [
  "bump2version",
  "dioxus",
- "gloo-net 0.6.0",
  "gloo-timers 0.3.0",
  "leptos",
  "log",
  "maplit",
- "serde_json",
- "wasm-bindgen-futures",
  "web-sys",
  "yew",
 ]
