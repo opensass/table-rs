@@ -1,6 +1,6 @@
 use maplit::hashmap;
 use table_rs::yew::table::Table;
-use table_rs::yew::types::{Column, TableClasses};
+use table_rs::yew::types::{Column, TableClasses, TableTexts};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
@@ -110,6 +110,7 @@ pub fn example3() -> Html {
         tbody: "custom-tbody",
         pagination: "custom-pagination",
         search_input: "custom-search-input",
+        ..Default::default()
     };
 
     html! { <Table data={data} columns={columns} classes={custom_classes} /> }
@@ -417,6 +418,74 @@ pub fn example12() -> Html {
         <div class="overflow-x-auto bg-gray-100 p-4 rounded-lg shadow-md">
             <Table data={data} columns={columns} classes={custom_classes} />
         </div>
+    }
+}
+
+#[function_component(Example13)]
+pub fn example13() -> Html {
+    let data = vec![
+        hashmap! { "name" => "Ferris".to_string(), "email" => "ferris@opensass.org".to_string() },
+        hashmap! { "name" => "Ferros".to_string(), "email" => "ferros@opensass.org".to_string() },
+        hashmap! { "name" => "Crab".to_string(), "email" => "crab@opensass.org".to_string() },
+        hashmap! { "name" => "CrabFerris".to_string(), "email" => "crabferris@opensass.org".to_string() },
+    ];
+
+    let columns = vec![
+        Column {
+            id: "name",
+            header: "Name",
+            sortable: true,
+            ..Default::default()
+        },
+        Column {
+            id: "email",
+            header: "Email",
+            sortable: true,
+            ..Default::default()
+        },
+    ];
+
+    let classes = TableClasses {
+        container: "w-full max-w-5xl mx-auto mt-10",
+        table: "min-w-full bg-white shadow-md rounded-lg overflow-hidden",
+        thead: "bg-gray-100 text-gray-700 uppercase text-sm",
+        tbody: "divide-y divide-gray-200",
+        search_input: "mb-4 p-2 border rounded w-full max-w-xs",
+        row: "hover:bg-gray-50",
+        header_cell: "px-4 py-3",
+        body_cell: "px-4 py-3 text-gray-900",
+        loading_row: "text-center py-4",
+        empty_row: "text-center py-4 text-gray-500",
+        pagination: "flex justify-between items-center mt-4",
+        pagination_button:
+            "px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50",
+    };
+
+    let styles = hashmap! {
+        "table" => "border-collapse: collapse; width: 100%;",
+    };
+
+    let texts = TableTexts {
+        loading: "Loading data...",
+        empty: "No entries match your search.",
+        search_placeholder: "Search by name or email...",
+        previous_button: "← Previous",
+        next_button: "Next →",
+        page_indicator: "Page {current} of {total}",
+    };
+
+    html! {
+        <Table
+            data={data}
+            columns={columns}
+            page_size={5}
+            loading={false}
+            classes={classes}
+            styles={styles}
+            paginate={true}
+            search={true}
+            texts={texts}
+        />
     }
 }
 
@@ -944,6 +1013,84 @@ pub fn example12() -> Html {
 }"#
                 >
                     <Example12 />
+                </ExampleCard>
+                <ExampleCard
+                    title="Tailwind CSS Custom Table"
+                    code=r#"use yew::prelude::*;
+use maplit::hashmap;
+use table_rs::yew::table::Table;
+use table_rs::yew::types::Column;
+use table_rs::yew::types::TableTexts;
+use table_rs::yew::types::TableClasses;
+
+#[function_component(Example13)]
+pub fn example13() -> Html {
+    let data = vec![
+        hashmap! { "name" => "Ferris".to_string(), "email" => "ferris@opensass.org".to_string() },
+        hashmap! { "name" => "Ferros".to_string(), "email" => "ferros@opensass.org".to_string() },
+        hashmap! { "name" => "Crab".to_string(), "email" => "crab@opensass.org".to_string() },
+        hashmap! { "name" => "CrabFerris".to_string(), "email" => "crabferris@opensass.org".to_string() },
+    ];
+
+    let columns = vec![
+        Column {
+            id: "name",
+            header: "Name",
+            sortable: true,
+            ..Default::default()
+        },
+        Column {
+            id: "email",
+            header: "Email",
+            sortable: true,
+            ..Default::default()
+        },
+    ];
+
+    let classes = TableClasses {
+        container: "w-full max-w-5xl mx-auto mt-10",
+        table: "min-w-full bg-white shadow-md rounded-lg overflow-hidden",
+        thead: "bg-gray-100 text-gray-700 uppercase text-sm",
+        tbody: "divide-y divide-gray-200",
+        search_input: "mb-4 p-2 border rounded w-full max-w-xs",
+        row: "hover:bg-gray-50",
+        header_cell: "px-4 py-3",
+        body_cell: "px-4 py-3 text-gray-900",
+        loading_row: "text-center py-4",
+        empty_row: "text-center py-4 text-gray-500",
+        pagination: "flex justify-between items-center mt-4",
+        pagination_button: "px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50",
+    };
+
+    let styles = hashmap! {
+        "table" => "border-collapse: collapse; width: 100%;",
+    };
+
+    let texts = TableTexts {
+        loading: "Loading data...",
+        empty: "No entries match your search.",
+        search_placeholder: "Search by name or email...",
+        previous_button: "← Previous",
+        next_button: "Next →",
+        page_indicator: "Page {current} of {total}",
+    };
+
+    html! {
+        <Table
+            data={data}
+            columns={columns}
+            page_size={5}
+            loading={false}
+            classes={classes}
+            styles={styles}
+            paginate={true}
+            search={true}
+            texts={texts}
+        />
+    }
+}"#
+                >
+                    <Example13 />
                 </ExampleCard>
             </div>
         </div>
