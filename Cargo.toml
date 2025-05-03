@@ -1,6 +1,6 @@
 [package]
 name = "table-rs"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2024"
 rust-version = "1.85"
 description = "📋 A highly customizable table component for WASM frameworks like Yew, Dioxus, and Leptos."
