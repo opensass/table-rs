@@ -1,0 +1,22 @@
+[package]
+name = "table-rs-dioxus-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = { version = "0.6.3", features = ["web"] }
+table-rs = { path = "../../", features = ["dio"] }
+dioxus-logger = "0.6.2"
+maplit = "1.0.2"
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"

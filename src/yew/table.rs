@@ -1,6 +1,6 @@
 use gloo_timers::callback::Timeout;
-use web_sys::wasm_bindgen::JsValue;
 use web_sys::UrlSearchParams;
+use web_sys::wasm_bindgen::JsValue;
 use yew::prelude::*;
 
 use crate::yew::body::TableBody;
@@ -9,6 +9,70 @@ use crate::yew::header::TableHeader;
 use crate::yew::types::SortOrder;
 use crate::yew::types::TableProps;
 
+/// A fully featured table component with pagination, sorting, and search support.
+///
+/// This component renders a complete `<table>` element, including headers (`<thead>`), body (`<tbody>`),
+/// and optional features such as client-side sorting, pagination, and search input.
+/// It is built using Yew and supports flexible styling and customization.
+///
+/// # Arguments
+/// * `props` - The properties passed to the component.
+///   - `data` - A `Vec<HashMap<&'static str, String>>` representing the table's row data.
+///   - `columns` - A `Vec<Column>` defining the structure and behavior of each column.
+///   - `page_size` - A `usize` defining how many rows to show per page.
+///   - `loading` - A `bool` indicating whether the table is in a loading state.
+///   - `classes` - A `TableClasses` struct for customizing class names of elements.
+///   - `styles` - A `HashMap<&'static str, &'static str>` for inline style overrides.
+///   - `paginate` - A `bool` controlling whether pagination controls are displayed.
+///   - `search` - A `bool` enabling a search input above the table.
+///   - `texts` - A `TableTexts` struct for customizing placeholder and fallback texts.
+///
+/// # Features
+/// - **Client-side search** with URL hydration via `?search=`
+/// - **Column sorting** (ascending/descending toggle)
+/// - **Pagination controls**
+/// - **Custom class and inline style support**
+/// - Displays a loading row or empty state message when appropriate
+///
+/// # Returns
+/// (Html): A complete, styled and interactive table component rendered in Yew.
+///
+/// # Examples
+/// ```rust
+/// use yew::prelude::*;
+/// use maplit::hashmap;
+/// use table_rs::yew::table::Table;
+/// use table_rs::yew::types::{Column, TableClasses, TableTexts};
+///
+/// #[function_component(App)]
+/// pub fn app() -> Html {
+///     let data = vec![
+///         hashmap! { "name" => "Ferris".into(), "email" => "ferris@opensass.org".into() },
+///         hashmap! { "name" => "Ferros".into(), "email" => "ferros@opensass.org".into() },
+///     ];
+///
+///     let columns = vec![
+///         Column { id: "name", header: "Name", sortable: true, ..Default::default() },
+///         Column { id: "email", header: "Email", sortable: false, ..Default::default() },
+///     ];
+///
+///     html! {
+///         <Table
+///             data={data}
+///             columns={columns}
+///             page_size={10}
+///             loading={false}
+///             paginate={true}
+///             search={true}
+///             classes={TableClasses::default()}
+///             texts={TableTexts::default()}
+///         />
+///     }
+/// }
+/// ```
+///
+/// # See Also
+/// - [MDN table Element](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/table)
 #[function_component(Table)]
 pub fn table(props: &TableProps) -> Html {
     let TableProps {
@@ -20,6 +84,7 @@ pub fn table(props: &TableProps) -> Html {
         styles,
         paginate,
         search,
+        texts,
     } = props;
 
     let page = use_state(|| 0);
@@ -132,7 +197,7 @@ pub fn table(props: &TableProps) -> Html {
                             class={classes.search_input}
                             type="text"
                             value={(*search_query).clone()}
-                            placeholder="Search..."
+                            placeholder={texts.search_placeholder}
                             aria-label="Search table"
                             oninput={on_search_change}
                         />

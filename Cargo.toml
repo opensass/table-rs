@@ -18,11 +18,11 @@ exclude = ["/assets", "/examples"]
 yew = { version = "0.21.0", default-features = false, optional = true }
 dioxus = { version = "0.6.3", optional = true }
 leptos = { version = "0.7.7", optional = true }
-web-sys = { version = "0.3.77", features = ["Window"]}
-gloo-timers = "0.3.0"
+web-sys = { version = "0.3.77", features = ["Window", "UrlSearchParams", "Url"]}
+gloo-timers = { version = "0.3.0", optional = true }
 
 [features]
-yew = ["dep:yew"]
+yew = ["dep:yew", "gloo-timers"]
 dio = ["dioxus"]
 lep = ["leptos"]
 

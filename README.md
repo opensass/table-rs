@@ -21,7 +21,7 @@
 | Framework | Live Demo                                                                                                                |
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Yew       | [![Netlify Status](https://api.netlify.com/api/v1/badges/4e1494d6-c19a-4a4c-b2d3-47d964214a71/deploy-status)](https://table-rs.netlify.app) |
-| Dioxus    | TODO                                                                                                                     |
+| Dioxus    | [![Netlify Status](https://api.netlify.com/api/v1/badges/4e1494d6-c19a-4a4c-b2d3-47d964214a71/deploy-status)](https://table-dio.netlify.app) |
 | Leptos    | TODO                                                                                                                     |
 
 ## 📜 Intro
@@ -44,7 +44,7 @@ The following are some of the reasons why **Table RS** should be your go-to tabl
 <!-- absolute url for docs.rs cause YEW.md is not included in crate -->
 Refer to [our guide](https://github.com/opensass/table-rs/blob/main/YEW.md) to integrate this component into your Yew app.
 
-## 🧬 Dioxus Usage (TODO)
+## 🧬 Dioxus Usage
 
 <!-- absolute url for docs.rs cause DIOXUS.md is not included in crate -->
 Refer to [our guide](https://github.com/opensass/table-rs/blob/main/DIOXUS.md) to integrate this component into your Dioxus app.
@@ -53,35 +53,6 @@ Refer to [our guide](https://github.com/opensass/table-rs/blob/main/DIOXUS.md) t
 
 <!-- absolute url for docs.rs cause LEPTOS.md is not included in crate -->
 Refer to [our guide](https://github.com/opensass/table-rs/blob/main/LEPTOS.md) to integrate this component into your Leptos app.
-
-## 📊 Benchmark: TanStack Table vs Table RS
-
-| Metric                          | TanStack Table (React) | Table RS (Yew + WASM) |
-|--------------------------------|-----------------------------|----------------------------|
-| **Page Load Time (1M rows)**   | ~10 seconds                 | ~2 seconds                 |
-| **Memory Heap Usage**          | >3 GB (heap overflow)       | ~1.1 GB (stable)             |
-| **Initial Rendering**          | Heavy blocking, slow DOM paint | Efficient, lightweight rendering |
-| **Browser Responsiveness**     | Delayed interactivity      | Smooth after hydration     |
-| **Sorting Performance**        | 2-4s for large columns     | Sub-1s due to WASM speed   |
-| **Search Performance**         | Acceptable, but slower     | Instantaneous, even at scale |
-| **Lighthouse Performance Score** | 49/100                    | 60/100                     |
-| **Scalability**                | Limited due to memory and VDOM | Near-native scalability     |
-
-### 🟨 TanStack Table (React)
-- Uses Virtual DOM and JS heap to manage massive data.
-- Runtime bottlenecks emerge with >100k rows.
-- Memory allocation during sorting and filtering can spike to **3GB+**, often leading to **heap overflow** during intensive usage.
-- Lighthouse audit shows poor TTI and CPU blocking.
-
-### 🟩 Table RS (Yew + WASM)
-- WASM-compiled logic is highly memory-efficient and deterministic.
-- DOM rendering is direct, bypassing React's reconciliation.
-- ~1.1 GB of memory heap used even with **1 million rows**.
-- Built-in support for search/sort with stable paging.
-- No hydration issues (client-only generation).
-- Lighthouse performance significantly better, especially in CPU/Memory metrics.
-
-For large-data UI benchmarks like tables with millions of rows, **`table-rs` in Yew/WASM is a superior choice** compared to React + TanStack.
 
 ## 🤝 Contributions
 
