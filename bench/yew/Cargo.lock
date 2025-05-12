@@ -940,7 +940,7 @@ dependencies = [
 
 [[package]]
 name = "table-rs"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "gloo-timers 0.3.0",
  "web-sys",
