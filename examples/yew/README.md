@@ -78,7 +78,4 @@
    trunk serve --port 3000
    ```
 
-1. Uncomment this line:
-   https://github.com/opensass/table-rs/blob/4d3676c4c886a65a321b06656322b71fdb644cae/examples/yew/index.html#L5
-
 Navigate to http://localhost:3000 to explore all available components.
