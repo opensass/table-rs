@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dioxus = { version = "0.6.3", features = ["web"] }
+dioxus = { version = "0.7.0", features = ["web"] }
 table-rs = { path = "../../", features = ["dio"] }
-dioxus-logger = "0.6.2"
+dioxus-logger = "0.7.0"
 maplit = "1.0.2"
 
 [profile]
