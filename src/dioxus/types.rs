@@ -74,6 +74,9 @@ pub struct TableClasses {
     /// Wrapper around the entire table.
     pub container: &'static str,
 
+    /// Wrapper around just the <table> element.
+    pub table_container: &'static str,
+
     /// Class for the `<table>` element.
     pub table: &'static str,
 
@@ -112,6 +115,7 @@ impl Default for TableClasses {
     fn default() -> Self {
         Self {
             container: "table-container",
+            table_container: "table-el-container",
             table: "table",
             thead: "thead",
             tbody: "tbody",

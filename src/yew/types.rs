@@ -51,6 +51,10 @@ pub struct TableClasses {
     #[prop_or("table-container")]
     pub container: &'static str,
 
+    /// Class name for the the container just around <table> element
+    #[prop_or("table-container")]
+    pub table_container: &'static str,
+
     /// Class name for the table element.
     #[prop_or("table")]
     pub table: &'static str,
@@ -100,6 +104,7 @@ impl Default for TableClasses {
     fn default() -> Self {
         Self {
             container: "table-container",
+            table_container: "table-el-container",
             table: "table",
             thead: "thead",
             tbody: "tbody",

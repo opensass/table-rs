@@ -186,21 +186,24 @@ pub fn Table(props: TableProps) -> Element {
                     }
                 }
             }
-            table {
-                class: "{classes.table}",
-                TableHeader {
-                    columns: columns.clone(),
-                    sort_column: sort_column,
-                    sort_order: sort_order,
-                    on_sort_column: on_sort_column,
-                    classes: classes.clone(),
-                }
-                TableBody {
-                    columns: columns.clone(),
-                    rows: page_rows.to_vec(),
-                    loading: loading,
-                    classes: classes.clone(),
-                    texts: texts.clone(),
+            div {
+                class: "{classes.table_container}",
+                table {
+                    class: "{classes.table}",
+                    TableHeader {
+                        columns: columns.clone(),
+                        sort_column: sort_column,
+                        sort_order: sort_order,
+                        on_sort_column: on_sort_column,
+                        classes: classes.clone(),
+                    }
+                    TableBody {
+                        columns: columns.clone(),
+                        rows: page_rows.to_vec(),
+                        loading: loading,
+                        classes: classes.clone(),
+                        texts: texts.clone(),
+                    }
                 }
             }
             {pagination_controls}

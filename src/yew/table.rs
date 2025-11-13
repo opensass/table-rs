@@ -205,21 +205,23 @@ pub fn table(props: &TableProps) -> Html {
                 } else {
                     html! {}
                 } }
-            <table class={classes.table} style={*styles.get("table").unwrap_or(&"")} role="table">
-                <TableHeader
-                    columns={columns.clone()}
-                    {sort_column}
-                    {sort_order}
-                    {on_sort_column}
-                    classes={classes.clone()}
-                />
-                <TableBody
-                    columns={columns.clone()}
-                    rows={page_rows.to_vec()}
-                    loading={loading}
-                    classes={classes.clone()}
-                />
-            </table>
+            <div class={classes.table_container}>
+                <table class={classes.table} style={*styles.get("table").unwrap_or(&"")} role="table">
+                    <TableHeader
+                        columns={columns.clone()}
+                        {sort_column}
+                        {sort_order}
+                        {on_sort_column}
+                        classes={classes.clone()}
+                    />
+                    <TableBody
+                        columns={columns.clone()}
+                        rows={page_rows.to_vec()}
+                        loading={loading}
+                        classes={classes.clone()}
+                    />
+                </table>
+            </div>
             { if *paginate {
                     html! {
                         <PaginationControls {page} {total_pages} />
