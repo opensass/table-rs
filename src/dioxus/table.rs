@@ -184,7 +184,7 @@ pub fn Table(props: TableProps) -> Element {
                         let val = e.value();
                         search_query.set(val.clone());
                         page.set(0);
-                        #[cfg(target_arch = "wasm")]
+                        #[cfg(target_family = "wasm")]
                         update_search_param(&val);
                     }
                 }
