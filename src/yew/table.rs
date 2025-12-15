@@ -222,7 +222,7 @@ pub fn table(props: &TableProps) -> Html {
             </table>
             { if *paginate {
                     html! {
-                        <PaginationControls {page} {total_pages} />
+                        <PaginationControls {page} {total_pages} classes={classes.clone()}/>
                     }
                 } else {
                     html! {}
