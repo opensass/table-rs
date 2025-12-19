@@ -161,6 +161,10 @@ pub struct TableProps {
     /// CSS classes for styling different parts of the table.
     #[props(default)]
     pub classes: TableClasses,
+
+    /// Optional component to render at the end of each row.
+    #[props(default)]
+    pub row_end_component: Option<ReadOnlySignal<Callback<HashMap<&'static str, String>, Element>>>,
 }
 
 /// Sort direction (ascending or descending).

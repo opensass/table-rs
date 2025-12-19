@@ -65,6 +65,8 @@ pub fn TableBody(
     loading: bool,
     classes: TableClasses,
     texts: TableTexts,
+    #[props(default)]
+    row_end_component: Option<ReadOnlySignal<Callback<HashMap<&'static str, String>, Element>>>,
 ) -> Element {
     let content = if loading {
         rsx! {
@@ -91,6 +93,11 @@ pub fn TableBody(
                     for col in columns.iter() {
                         td { class: "{classes.body_cell}", role: "cell",
                             "{row.get(col.id).unwrap_or(&String::new())}"
+                        }
+                    }
+                    if let Some(component) = row_end_component {
+                        td { class: "{classes.body_cell}", role: "cell",
+                            {component.read().call(row.clone())}
                         }
                     }
                 }

@@ -63,6 +63,7 @@ pub fn body(props: &TableBodyProps) -> Html {
         loading,
         classes,
         texts,
+        row_end_component,
     } = props;
 
     html! {
@@ -86,6 +87,17 @@ pub fn body(props: &TableBodyProps) -> Html {
                                                 <td class={classes.body_cell} role="cell">{ row.get(col.id).unwrap_or(&"".to_string()) }</td>
                                             }
                                         })
+                                    }
+                                    {
+                                        if let Some(component) = row_end_component {
+                                            html! {
+                                                <td class={classes.body_cell} role="cell">
+                                                    { component.emit(row.clone()) }
+                                                </td>
+                                            }
+                                        } else {
+                                            html! {}
+                                        }
                                     }
                                 </tr>
                             }
