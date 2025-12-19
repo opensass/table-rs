@@ -489,6 +489,54 @@ pub fn example13() -> Html {
     }
 }
 
+#[function_component(Example14)]
+pub fn example14() -> Html {
+    let data = vec![
+        hashmap! { "name" => "Ferris".to_string(), "email" => "ferris@opensass.org".to_string() },
+        hashmap! { "name" => "Ferros".to_string(), "email" => "ferros@opensass.org".to_string() },
+        hashmap! { "name" => "Crab".to_string(), "email" => "crab@opensass.org".to_string() },
+    ];
+
+    let columns = vec![
+        Column {
+            id: "name",
+            header: "Name",
+            sortable: true,
+            ..Default::default()
+        },
+        Column {
+            id: "email",
+            header: "Email",
+            sortable: true,
+            ..Default::default()
+        },
+    ];
+
+    let row_end_component = Callback::from(|row: std::collections::HashMap<&'static str, String>| {
+        let name = row.get("name").cloned().unwrap_or_default();
+        let onclick = Callback::from(move |_| {
+            let window = web_sys::window().unwrap();
+            window.alert_with_message(&format!("Action for {}!", name)).unwrap();
+        });
+        html! {
+            <button
+                class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600"
+                {onclick}
+            >
+                { "Action" }
+            </button>
+        }
+    });
+
+    html! {
+        <Table
+            data={data}
+            columns={columns}
+            row_end_component={row_end_component}
+        />
+    }
+}
+
 #[function_component(LandingPage)]
 pub fn landing_page() -> Html {
     html! {
@@ -1091,6 +1139,55 @@ pub fn example13() -> Html {
 }"#
                 >
                     <Example13 />
+                </ExampleCard>
+                <ExampleCard
+                    title="Row End Component (Actions)"
+                    code=r#"use yew::prelude::*;
+use maplit::hashmap;
+use table_rs::yew::table::Table;
+use table_rs::yew::types::Column;
+
+#[function_component(Example14)]
+pub fn example14() -> Html {
+    let data = vec![
+        hashmap! { "name" => "Ferris".to_string(), "email" => "ferris@opensass.org".to_string() },
+        hashmap! { "name" => "Ferros".to_string(), "email" => "ferros@opensass.org".to_string() },
+        hashmap! { "name" => "Crab".to_string(), "email" => "crab@opensass.org".to_string() },
+    ];
+
+    let columns = vec![
+        Column { id: "name", header: "Name", sortable: true, ..Default::default() },
+        Column { id: "email", header: "Email", sortable: true, ..Default::default() },
+    ];
+
+    let row_end_component = Callback::from(|row: std::collections::HashMap<&'static str, String>| {
+        let name = row.get("name").cloned().unwrap_or_default();
+        let onclick = Callback::from(move |_| {
+            web_sys::window()
+                .unwrap()
+                .alert_with_message(&format!("Action for {}!", name))
+                .unwrap();
+        });
+        html! {
+            <button
+                class="px-2 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600"
+                {onclick}
+            >
+                { "Action" }
+            </button>
+        }
+    });
+
+    html! {
+        <Table
+            data={data}
+            columns={columns}
+            row_end_component={row_end_component}
+        />
+    }
+}"#
+                >
+                    <Example14 />
                 </ExampleCard>
             </div>
         </div>

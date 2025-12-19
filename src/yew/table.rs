@@ -85,6 +85,7 @@ pub fn table(props: &TableProps) -> Html {
         paginate,
         search,
         texts,
+        row_end_component,
     } = props;
 
     let page = use_state(|| 0);
@@ -212,17 +213,20 @@ pub fn table(props: &TableProps) -> Html {
                     {sort_order}
                     {on_sort_column}
                     classes={classes.clone()}
+                    has_row_end={row_end_component.is_some()}
                 />
                 <TableBody
                     columns={columns.clone()}
                     rows={page_rows.to_vec()}
                     loading={loading}
                     classes={classes.clone()}
+                    texts={texts.clone()}
+                    row_end_component={row_end_component.clone()}
                 />
             </table>
             { if *paginate {
                     html! {
-                        <PaginationControls {page} {total_pages} />
+                        <PaginationControls {page} {total_pages} classes={classes.clone()} texts={texts.clone()}/>
                     }
                 } else {
                     html! {}

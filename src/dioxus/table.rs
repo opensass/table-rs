@@ -78,6 +78,7 @@ pub fn Table(props: TableProps) -> Element {
         search,
         texts,
         classes,
+        row_end_component,
     } = props;
 
     let mut page = use_signal(|| 0_usize);
@@ -194,6 +195,7 @@ pub fn Table(props: TableProps) -> Element {
                     sort_order: sort_order,
                     on_sort_column: on_sort_column,
                     classes: classes.clone(),
+                    has_row_end: row_end_component.is_some(),
                 }
                 TableBody {
                     columns: columns.clone(),
@@ -201,6 +203,7 @@ pub fn Table(props: TableProps) -> Element {
                     loading: loading,
                     classes: classes.clone(),
                     texts: texts.clone(),
+                    row_end_component: row_end_component.clone(),
                 }
             }
             {pagination_controls}

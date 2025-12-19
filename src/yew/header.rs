@@ -58,6 +58,7 @@ pub fn header(props: &TableHeaderProps) -> Html {
         sort_order,
         on_sort_column,
         classes,
+        has_row_end,
     } = props;
 
     html! {
@@ -91,6 +92,13 @@ pub fn header(props: &TableHeaderProps) -> Html {
                         </th>
                     }
                 }) }
+                { if *has_row_end {
+                    html! {
+                        <th class={classes.header_cell.clone()} role="columnheader"></th>
+                    }
+                } else {
+                    html! {}
+                } }
             </tr>
         </thead>
     }

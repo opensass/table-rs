@@ -194,6 +194,10 @@ pub struct TableProps {
     /// Text labels for the table UI.
     #[prop_or_default]
     pub texts: TableTexts,
+
+    /// Optional component to render at the end of each row.
+    #[prop_or_default]
+    pub row_end_component: Option<Callback<HashMap<&'static str, String>, Html>>,
 }
 
 /// Props for the table header including sorting logic.
@@ -238,6 +242,10 @@ pub struct TableHeaderProps {
     /// CSS classes used to style the table header.
     #[prop_or_default]
     pub classes: TableClasses,
+
+    /// Whether there is a row end component that needs an extra header cell.
+    #[prop_or(false)]
+    pub has_row_end: bool,
 }
 
 /// Props for the pagination controls component.
@@ -281,4 +289,8 @@ pub struct TableBodyProps {
     /// Text labels used in the body (e.g., loading, empty).
     #[prop_or_default]
     pub texts: TableTexts,
+
+    /// Optional component to render at the end of each row.
+    #[prop_or_default]
+    pub row_end_component: Option<Callback<HashMap<&'static str, String>, Html>>,
 }
