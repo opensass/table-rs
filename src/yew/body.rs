@@ -77,19 +77,13 @@ pub fn body(props: &TableBodyProps) -> Html {
                     }
                 } else {
                     html! {
-                        for rows.iter().map(|row| {
-                            html! {
+                        for row in rows.iter() {
                                 <tr class={classes.row} role="row">
-                                    {
-                                        for columns.iter().map(|col| {
-                                            html! {
+                                        for col in columns.iter() {
                                                 <td class={classes.body_cell} role="cell">{ row.get(col.id).unwrap_or(&"".to_string()) }</td>
-                                            }
-                                        })
-                                    }
+                                        }
                                 </tr>
-                            }
-                        })
+                        }
                     }
                 } }
         </tbody>
