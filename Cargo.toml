@@ -1,8 +1,8 @@
 [package]
 name = "table-rs"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.89"
 description = "📋 A highly customizable table component for WASM frameworks like Yew, Dioxus, and Leptos."
 license = "MIT"
 keywords = ["table", "yew", "rust", "dioxus", "leptos"]
