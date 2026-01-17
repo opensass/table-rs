@@ -14,6 +14,10 @@ pub struct Column {
     #[props(default)]
     pub sortable: bool,
 
+    /// Provide custom element generator (defaults to plain String -> String).
+    #[props(default)]
+    pub cell: Option<Callback<String, Element>>,
+
     /// Minimum width of the column (default is 100).
     #[props(default = 100)]
     pub min_width: u32,

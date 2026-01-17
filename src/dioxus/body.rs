@@ -90,7 +90,10 @@ pub fn TableBody(
                 tr { class: "{classes.row}", role: "row",
                     for col in columns.iter() {
                         td { class: "{classes.body_cell}", role: "cell",
-                            "{row.get(col.id).unwrap_or(&String::new())}"
+                            BodyCell {
+                                column: col.clone(),
+                                content: row.get(col.id).unwrap_or(&String::new()),
+                            }
                         }
                     }
                 }
@@ -101,6 +104,17 @@ pub fn TableBody(
     rsx! {
         tbody { class: "{classes.tbody}",
             {content}
+        }
+    }
+}
+
+#[component]
+fn BodyCell(column: Column, content: String) -> Element {
+    if let Some(cb) = column.cell {
+        cb(content)
+    } else {
+        rsx! {
+            "{content}"
         }
     }
 }
