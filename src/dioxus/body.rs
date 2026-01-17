@@ -110,7 +110,7 @@ pub fn TableBody(
 
 #[component]
 fn BodyCell(column: Column, content: String) -> Element {
-    if let Some(cb) = column.custom_element {
+    if let Some(cb) = column.cell {
         cb(content)
     } else {
         rsx! {

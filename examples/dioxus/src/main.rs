@@ -369,6 +369,78 @@ fn Example9() -> Element {{
                     }
                     Example9 {}
                 }
+                div {
+                    class: "flex flex-col items-center bg-gray-50 p-6 rounded-lg shadow-lg",
+                    h2 { class: "text-xl font-semibold mb-4 text-gray-800", "Custom Element" }
+                    pre {
+                        class: "font-mono text-xs text-white p-4 bg-gray-800 mb-8 rounded-md w-full overflow-x-auto",
+                        r##"use dioxus::prelude::*;
+use maplit::hashmap;
+use table_rs::dioxus::table::Table;
+use table_rs::dioxus::types::{{Column, TableClasses, TableTexts}};
+
+
+#[component]
+fn Example10() -> Element {{
+    let data = vec![
+        hashmap! {{
+            "name" => "Ferris".to_string(),
+            "email" => "ferris@opensass.org".to_string(),
+            "role" => "admin".to_string()
+        }},
+        hashmap! {{
+            "name" => "Rustacean".to_string(),
+            "email" => "rust@opensass.org".to_string(),
+            "role" => "member".to_string()
+        }},
+    ];
+
+    let email_renderer = Callback::new(move |value: String| {{
+        rsx! {{
+            a {{ href: "mailto:{{value}}", "{{value}}" }}
+        }}
+    }});
+    let role_renderer = Callback::new(move |value: String| {{
+        if value == "admin" {{
+            rsx!( span {{ "Admin" }} )
+        }} else {{
+            rsx!( span {{ "{{value}}" }} )
+        }}
+    }});
+
+    let columns = vec![
+        Column {{
+            id: "name",
+            header: "Name",
+            ..Default::default()
+        }},
+        Column {{
+            id: "email",
+            header: "Email",
+            cell: Some(email_renderer),
+            ..Default::default()
+        }},
+        Column {{
+            id: "role",
+            header: "Role",
+            cell: Some(role_renderer),
+            ..Default::default()
+        }},
+    ];
+
+    rsx! {{
+            Table {{
+                columns: columns,
+                data: data,
+                loading: false,
+                classes: TableClasses::default(),
+                texts: TableTexts::default(),
+            }}
+    }}
+}}"##
+                    }
+                    Example10 {}
+                }
             }
         }
     }
@@ -696,5 +768,64 @@ fn Example9() -> Element {
             search: true,
             texts: texts
         }
+    }
+}
+
+#[component]
+fn Example10() -> Element {
+    let data = vec![
+        hashmap! {
+            "name" => "Ferris".to_string(),
+            "email" => "ferris@opensass.org".to_string(),
+            "role" => "admin".to_string()
+        },
+        hashmap! {
+            "name" => "Rustacean".to_string(),
+            "email" => "rust@opensass.org".to_string(),
+            "role" => "member".to_string()
+        },
+    ];
+
+    let email_renderer = Callback::new(move |value: String| {
+        rsx! {
+            a { href: "mailto:{value}", "{value}" }
+        }
+    });
+    let role_renderer = Callback::new(move |value: String| {
+        if value == "admin" {
+            rsx!( span { "Admin" } )
+        } else {
+            rsx!( span { "{value}" } )
+        }
+    });
+
+    let columns = vec![
+        Column {
+            id: "name",
+            header: "Name",
+            ..Default::default()
+        },
+        Column {
+            id: "email",
+            header: "Email",
+            cell: Some(email_renderer),
+            ..Default::default()
+        },
+        Column {
+            id: "role",
+            header: "Role",
+            cell: Some(role_renderer),
+            ..Default::default()
+        },
+    ];
+
+    rsx! {
+            Table {
+                columns: columns,
+                data: data,
+                loading: false,
+                classes: TableClasses::default(),
+                texts: TableTexts::default(),
+            }
     }
 }

@@ -16,7 +16,7 @@ pub struct Column {
 
     /// Provide custom element generator (defaults to plain String -> String).
     #[props(default)]
-    pub custom_element: Option<Callback<String, Element>>,
+    pub cell: Option<Callback<String, Element>>,
 
     /// Minimum width of the column (default is 100).
     #[props(default = 100)]
