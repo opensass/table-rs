@@ -85,6 +85,7 @@ pub fn Table(props: TableProps) -> Element {
     let mut sort_order = use_signal(SortOrder::default);
     let mut search_query = use_signal(String::new);
 
+    #[cfg(target_family = "wasm")]
     use_effect(move || {
         let window = web_sys::window().unwrap();
         let location = window.location();
@@ -95,6 +96,7 @@ pub fn Table(props: TableProps) -> Element {
         }
     });
 
+    #[cfg(target_family = "wasm")]
     let update_search_param = move |query: &str| {
         let window = web_sys::window().unwrap();
         let href = window.location().href().unwrap();
@@ -182,6 +184,7 @@ pub fn Table(props: TableProps) -> Element {
                         let val = e.value();
                         search_query.set(val.clone());
                         page.set(0);
+                        #[cfg(target_family = "wasm")]
                         update_search_param(&val);
                     }
                 }
