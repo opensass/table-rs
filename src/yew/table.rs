@@ -86,11 +86,13 @@ pub fn table(props: &TableProps) -> Html {
         search,
         texts,
         row_end_component,
+        default_sort_column,
+        default_sort_order,
     } = props;
 
     let page = use_state(|| 0);
-    let sort_column = use_state(|| None::<&'static str>);
-    let sort_order = use_state(|| SortOrder::Asc);
+    let sort_column = use_state(|| *default_sort_column);
+    let sort_order = use_state(|| *default_sort_order);
     let search_query = use_state(|| {
         let window = web_sys::window().unwrap();
         let search_params =

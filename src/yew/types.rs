@@ -198,6 +198,14 @@ pub struct TableProps {
     /// Optional component to render at the end of each row.
     #[prop_or_default]
     pub row_end_component: Option<Callback<HashMap<&'static str, String>, Html>>,
+
+    /// Default sort column identifier.
+    #[prop_or(None)]
+    pub default_sort_column: Option<&'static str>,
+
+    /// Default sort order.
+    #[prop_or(SortOrder::Asc)]
+    pub default_sort_order: SortOrder
 }
 
 /// Props for the table header including sorting logic.
