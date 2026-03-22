@@ -15,6 +15,7 @@ use std::collections::HashMap;
 /// - `loading`: A `bool` flag that, when true, displays a loading message instead of data rows.
 /// - `classes`: A `TableClasses` struct for customizing the CSS class names of the body, rows, and cells.
 /// - `texts`: A `TableTexts` struct that provides custom text for the loading and empty states.
+/// - `on_column_click`: An optional callback when a row is clicked.
 ///
 /// # Behavior
 /// - If `loading` is `true`, a single row with a loading message is shown spanning all columns.
@@ -65,31 +66,39 @@ pub fn TableBody(
     loading: bool,
     classes: TableClasses,
     texts: TableTexts,
+    on_column_click: Option<EventHandler<HashMap<&'static str, String>>>,
 ) -> Element {
     let content = if loading {
         rsx! {
             tr { class: "{classes.loading_row}",
-                td {
-                    colspan: "{columns.len()}",
-                    "{texts.loading}"
-                }
+                td { colspan: "{columns.len()}", "{texts.loading}" }
             }
         }
     } else if rows.is_empty() {
         rsx! {
             tr { class: "{classes.empty_row}",
-                td {
-                    colspan: "{columns.len()}",
-                    "{texts.empty}"
-                }
+                td { colspan: "{columns.len()}", "{texts.empty}" }
             }
         }
     } else {
         rsx! {
             for row in rows.iter() {
-                tr { class: "{classes.row}", role: "row",
+                tr {
+                    class: "{classes.row}",
+                    role: "row",
+                    onclick: {
+                        let row1 = row.clone();
+                        move |_| {
+                            if let Some(on_column_click) = on_column_click {
+                                on_column_click.call(row1.clone());
+                            }
+                        }
+                    },
                     for col in columns.iter() {
-                        td { class: "{classes.body_cell}", role: "cell",
+                        td {
+                            class: "{classes.body_cell} {col.cell_class.unwrap_or_default()}",
+                            style: "{col.cell_style.unwrap_or_default()}",
+                            role: "cell",
                             BodyCell {
                                 column: col.clone(),
                                 content: row.get(col.id).unwrap_or(&String::new()),
@@ -102,9 +111,7 @@ pub fn TableBody(
     };
 
     rsx! {
-        tbody { class: "{classes.tbody}",
-            {content}
-        }
+        tbody { class: "{classes.tbody}", {content} }
     }
 }
 
@@ -113,8 +120,6 @@ fn BodyCell(column: Column, content: String) -> Element {
     if let Some(cb) = column.cell {
         cb(content)
     } else {
-        rsx! {
-            "{content}"
-        }
+        rsx! { "{content}" }
     }
 }

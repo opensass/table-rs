@@ -1,5 +1,7 @@
 use dioxus::prelude::*;
+#[cfg(target_family = "wasm")]
 use web_sys::UrlSearchParams;
+#[cfg(target_family = "wasm")]
 use web_sys::wasm_bindgen::JsValue;
 
 use crate::dioxus::body::TableBody;
@@ -78,10 +80,12 @@ pub fn Table(props: TableProps) -> Element {
         search,
         texts,
         classes,
+        default_sort_column,
+        on_column_click,
     } = props;
 
     let mut page = use_signal(|| 0_usize);
-    let mut sort_column = use_signal(|| None::<&'static str>);
+    let mut sort_column = use_signal(|| default_sort_column);
     let mut sort_order = use_signal(SortOrder::default);
     let mut search_query = use_signal(String::new);
 
@@ -146,12 +150,15 @@ pub fn Table(props: TableProps) -> Element {
     let end = ((page() + 1) * page_size).min(filtered_rows.len());
     let page_rows = &filtered_rows[start..end];
 
+    // if this is the first click on a header column, sort ASC
+    // on second cick sort DESC
+    // on third click don't sort anymore
     let on_sort_column = move |id: &'static str| {
         if Some(id) == sort_column() {
-            sort_order.set(match sort_order() {
-                SortOrder::Asc => SortOrder::Desc,
-                SortOrder::Desc => SortOrder::Asc,
-            });
+            match sort_order() {
+                SortOrder::Asc => sort_order.set(SortOrder::Desc),
+                SortOrder::Desc => sort_column.set(None),
+            }
         } else {
             sort_column.set(Some(id));
             sort_order.set(SortOrder::Asc);
@@ -161,8 +168,8 @@ pub fn Table(props: TableProps) -> Element {
     let pagination_controls = if paginate {
         rsx! {
             PaginationControls {
-                page: page,
-                total_pages: total_pages,
+                page,
+                total_pages,
                 classes: classes.clone(),
                 texts: texts.clone(),
             }
@@ -172,8 +179,7 @@ pub fn Table(props: TableProps) -> Element {
     };
 
     rsx! {
-        div {
-            class: "{classes.container}",
+        div { class: "{classes.container}",
             if search {
                 input {
                     class: "{classes.search_input}",
@@ -186,24 +192,24 @@ pub fn Table(props: TableProps) -> Element {
                         page.set(0);
                         #[cfg(target_family = "wasm")]
                         update_search_param(&val);
-                    }
+                    },
                 }
             }
-            table {
-                class: "{classes.table}",
+            table { class: "{classes.table}",
                 TableHeader {
                     columns: columns.clone(),
-                    sort_column: sort_column,
-                    sort_order: sort_order,
-                    on_sort_column: on_sort_column,
+                    sort_column,
+                    sort_order,
+                    on_sort_column,
                     classes: classes.clone(),
                 }
                 TableBody {
                     columns: columns.clone(),
                     rows: page_rows.to_vec(),
-                    loading: loading,
+                    loading,
                     classes: classes.clone(),
                     texts: texts.clone(),
+                    on_column_click,
                 }
             }
             {pagination_controls}
