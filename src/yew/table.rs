@@ -91,29 +91,45 @@ pub fn table(props: &TableProps) -> Html {
     let sort_column = use_state(|| None::<&'static str>);
     let sort_order = use_state(|| SortOrder::Asc);
     let search_query = use_state(|| {
-        let window = web_sys::window().unwrap();
-        let search_params =
-            UrlSearchParams::new_with_str(&window.location().search().unwrap_or_default()).unwrap();
-        search_params.get("search").unwrap_or_default()
+        web_sys::window()
+            .and_then(|w| w.location().search().ok())
+            .and_then(|search| UrlSearchParams::new_with_str(&search).ok())
+            .and_then(|params| params.get("search"))
+            .unwrap_or_default()
     });
 
-    let debounced_search = use_state(|| None::<Timeout>);
+    let debounced_search = use_mut_ref(|| None::<Timeout>);
+
+    // Reset page to 0 when search query changes to prevent invalid page states
+    {
+        let page = page.clone();
+        let search_query = search_query.clone();
+        use_effect_with(search_query, move |_| {
+            page.set(0);
+        });
+    }
 
     let update_search_url = {
         let search_query = search_query.clone();
         Callback::from(move |query: String| {
-            let window = web_sys::window().unwrap();
-            let url = window.location().href().unwrap();
-            let url_obj = web_sys::Url::new(&url).unwrap();
-            let params = url_obj.search_params();
-            params.set("search", &query);
-            url_obj.set_search(&params.to_string().as_string().unwrap_or_default());
-            window
-                .history()
-                .unwrap()
-                .replace_state_with_url(&JsValue::NULL, "", Some(&url_obj.href()))
-                .unwrap();
-            search_query.set(query);
+            let result = web_sys::window()
+                .and_then(|window| {
+                    let url = window.location().href().ok()?;
+                    let url_obj = web_sys::Url::new(&url).ok()?;
+                    let params = url_obj.search_params();
+                    params.set("search", &query);
+                    url_obj.set_search(&params.to_string().as_string().unwrap_or_default());
+                    window
+                        .history()
+                        .ok()?
+                        .replace_state_with_url(&JsValue::NULL, "", Some(&url_obj.href()))
+                        .ok()
+                });
+
+            // Only update search_query if URL update succeeded or if we're not in a browser environment
+            if result.is_some() || web_sys::window().is_none() {
+                search_query.set(query);
+            }
         })
     };
 
@@ -122,44 +138,51 @@ pub fn table(props: &TableProps) -> Html {
         let update_search_url = update_search_url.clone();
         Callback::from(move |e: InputEvent| {
             let update_search_url = update_search_url.clone();
-            // TODO: Add debounce
-            // let debounced_search_ref = debounced_search.clone();
-            let input: web_sys::HtmlInputElement = e.target_unchecked_into();
+
+            // Safely get the input element, return early if not an HtmlInputElement
+            let Some(input) = e.target_dyn_into::<web_sys::HtmlInputElement>() else {
+                return;
+            };
             let value = input.value();
 
-            // let prev_timeout = {
-            //     debounced_search_ref.take()
-            // };
+            // Cancel previous timeout to prevent multiple URL updates
+            let prev_timeout = debounced_search.borrow_mut().take();
+            if let Some(prev) = prev_timeout {
+                prev.cancel();
+            }
 
-            // if let Some(prev) = prev_timeout {
-            //     prev.cancel();
-            // }
-
-            let timeout = Timeout::new(50, move || {
+            // Create new debounced timeout (300ms delay)
+            let timeout = Timeout::new(300, move || {
                 update_search_url.emit(value.clone());
             });
 
-            debounced_search.set(Some(timeout));
+            *debounced_search.borrow_mut() = Some(timeout);
         })
     };
 
-    let mut filtered_rows = data.clone();
-    if !search_query.is_empty() {
-        filtered_rows.retain(|row| {
-            columns.iter().any(|col| {
-                row.get(col.id)
-                    .map(|v| v.to_lowercase().contains(&search_query.to_lowercase()))
-                    .unwrap_or(false)
+    // Work with indices instead of cloning data to reduce memory allocations
+    let mut filtered_indices: Vec<usize> = if !search_query.is_empty() {
+        data.iter()
+            .enumerate()
+            .filter(|(_, row)| {
+                columns.iter().any(|col| {
+                    row.get(col.id)
+                        .map(|v| v.to_lowercase().contains(&search_query.to_lowercase()))
+                        .unwrap_or(false)
+                })
             })
-        });
-    }
+            .map(|(idx, _)| idx)
+            .collect()
+    } else {
+        (0..data.len()).collect()
+    };
 
     if let Some(col_id) = *sort_column {
         if let Some(col) = columns.iter().find(|c| c.id == col_id) {
-            filtered_rows.sort_by(|a, b| {
-                let val = "".to_string();
-                let a_val = a.get(col.id).unwrap_or(&val);
-                let b_val = b.get(col.id).unwrap_or(&val);
+            let val = "".to_string();
+            filtered_indices.sort_by(|&a, &b| {
+                let a_val = data[a].get(col.id).unwrap_or(&val);
+                let b_val = data[b].get(col.id).unwrap_or(&val);
                 match *sort_order {
                     SortOrder::Asc => a_val.cmp(b_val),
                     SortOrder::Desc => b_val.cmp(a_val),
@@ -168,10 +191,19 @@ pub fn table(props: &TableProps) -> Html {
         }
     }
 
-    let total_pages = (filtered_rows.len() as f64 / *page_size as f64).ceil() as usize;
-    let start = *page * page_size;
-    let end = ((*page + 1) * page_size).min(filtered_rows.len());
-    let page_rows = &filtered_rows[start..end];
+    // Ensure page_size is at least 1 to prevent division by zero
+    let page_size_safe = (*page_size).max(1);
+    // Ensure at least 1 page to avoid confusing 'Page 1 of 0' message when empty
+    let total_pages = ((filtered_indices.len() as f64 / page_size_safe as f64).ceil() as usize).max(1);
+
+    // Clamp current page to valid range to prevent showing empty results
+    let current_page = (*page).min(total_pages.saturating_sub(1));
+    let start = current_page * page_size_safe;
+    let end = ((current_page + 1) * page_size_safe).min(filtered_indices.len());
+    let page_rows: Vec<_> = filtered_indices[start..end]
+        .iter()
+        .map(|&idx| data[idx].clone())
+        .collect();
 
     let on_sort_column = {
         let sort_column = sort_column.clone();

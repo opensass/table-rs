@@ -22,10 +22,19 @@ pub fn pagination_controls(props: &PaginationControlsProps) -> Html {
 
     let on_next = {
         let page = page.clone();
+        let total_pages = *total_pages;
         Callback::from(move |_| {
-            page.set(*page + 1);
+            // Only increment if we're not on the last page
+            if *page + 1 < total_pages {
+                page.set(*page + 1);
+            }
         })
     };
+
+    // Pre-compute page indicator to avoid multiple string allocations
+    let page_indicator_text = texts.page_indicator
+        .replace("{current}", &(page_val + 1).to_string())
+        .replace("{total}", &total_pages.to_string());
 
     html! {
         <div class={classes.pagination}>
@@ -33,7 +42,7 @@ pub fn pagination_controls(props: &PaginationControlsProps) -> Html {
                 { texts.previous_button }
             </button>
             <span>
-                { texts.page_indicator.replace("{current}", &(page_val + 1).to_string()).replace("{total}", &total_pages.to_string()) }
+                { page_indicator_text }
             </span>
             <button
                 class={classes.pagination_button}
