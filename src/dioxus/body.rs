@@ -86,9 +86,15 @@ pub fn TableBody(
         }
     } else {
         rsx! {
-            for row in rows.iter() {
-                tr { class: "{classes.row}", role: "row",
+            for (idx , row) in rows.iter().enumerate() {
+                tr { key: "{idx}", class: "{classes.row}", role: "row",
                     for col in columns.iter() {
+                        {
+                            #[cfg(debug_assertions)]
+                            if !row.contains_key(col.id) {
+                                web_sys::console::warn_1(&format!("Missing column '{}' in row data", col.id).into());
+                            }
+                        }
                         td { class: "{classes.body_cell}", role: "cell",
                             BodyCell {
                                 column: col.clone(),

@@ -65,6 +65,8 @@ pub fn body(props: &TableBodyProps) -> Html {
         texts,
     } = props;
 
+    let empty_string = String::new();
+
     html! {
         <tbody class={classes.tbody}>
             { if *loading {
@@ -80,7 +82,7 @@ pub fn body(props: &TableBodyProps) -> Html {
                         for row in rows.iter() {
                                 <tr class={classes.row} role="row">
                                         for col in columns.iter() {
-                                                <td class={classes.body_cell} role="cell">{ row.get(col.id).unwrap_or(&"".to_string()) }</td>
+                                                <td class={classes.body_cell} role="cell">{ row.get(col.id).unwrap_or(&empty_string) }</td>
                                         }
                                 </tr>
                         }

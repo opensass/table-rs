@@ -1,5 +1,8 @@
 use dioxus::prelude::*;
+
+#[cfg(target_family = "wasm")]
 use web_sys::UrlSearchParams;
+#[cfg(target_family = "wasm")]
 use web_sys::wasm_bindgen::JsValue;
 
 use crate::dioxus::body::TableBody;
@@ -85,66 +88,85 @@ pub fn Table(props: TableProps) -> Element {
     let mut sort_order = use_signal(SortOrder::default);
     let mut search_query = use_signal(String::new);
 
+    // Reset page to 0 when search query changes to prevent invalid page states
+    use_effect(use_reactive!(|search_query| {
+        let _ = search_query;  // Explicitly depend on search_query
+        page.set(0);
+    }));
+
     #[cfg(target_family = "wasm")]
     use_effect(move || {
-        let window = web_sys::window().unwrap();
-        let location = window.location();
-        let search = location.search().unwrap_or_default();
-        let params = UrlSearchParams::new_with_str(&search).unwrap();
-        if let Some(search_val) = params.get("search") {
+        if let Some(search_val) = web_sys::window()
+            .and_then(|w| w.location().search().ok())
+            .and_then(|search| UrlSearchParams::new_with_str(&search).ok())
+            .and_then(|params| params.get("search"))
+        {
             search_query.set(search_val);
         }
     });
 
     #[cfg(target_family = "wasm")]
     let update_search_param = move |query: &str| {
-        let window = web_sys::window().unwrap();
-        let href = window.location().href().unwrap();
-        let url = web_sys::Url::new(&href).unwrap();
-        let params = url.search_params();
-        params.set("search", query);
-        url.set_search(&params.to_string().as_string().unwrap_or_default());
+        let _ = web_sys::window().and_then(|window| {
+            let href = window.location().href().ok()?;
+            let url = web_sys::Url::new(&href).ok()?;
+            let params = url.search_params();
+            params.set("search", query);
+            url.set_search(&params.to_string().as_string().unwrap_or_default());
 
-        window
-            .history()
-            .unwrap()
-            .replace_state_with_url(&JsValue::NULL, "", Some(&url.href()))
-            .unwrap();
+            window
+                .history()
+                .ok()?
+                .replace_state_with_url(&JsValue::NULL, "", Some(&url.href()))
+                .ok()
+        });
     };
 
-    let filtered_rows = {
-        let mut rows = data.clone();
-        if !search_query().is_empty() {
-            rows.retain(|row| {
+    // Work with indices instead of cloning data to reduce memory allocations
+    let mut filtered_indices: Vec<usize> = if !search_query().is_empty() {
+        data.iter()
+            .enumerate()
+            .filter(|(_, row)| {
                 columns.iter().any(|col| {
                     row.get(col.id)
                         .map(|v| v.to_lowercase().contains(&search_query().to_lowercase()))
                         .unwrap_or(false)
                 })
-            });
-        }
-
-        if let Some(col_id) = sort_column() {
-            if let Some(col) = columns.iter().find(|c| c.id == col_id) {
-                rows.sort_by(|a, b| {
-                    let val = "".to_string();
-                    let a_val = a.get(col.id).unwrap_or(&val);
-                    let b_val = b.get(col.id).unwrap_or(&val);
-                    match sort_order() {
-                        SortOrder::Asc => a_val.cmp(b_val),
-                        SortOrder::Desc => b_val.cmp(a_val),
-                    }
-                });
-            }
-        }
-
-        rows
+            })
+            .map(|(idx, _)| idx)
+            .collect()
+    } else {
+        (0..data.len()).collect()
     };
 
-    let total_pages = (filtered_rows.len() as f64 / page_size as f64).ceil() as usize;
-    let start = page() * page_size;
-    let end = ((page() + 1) * page_size).min(filtered_rows.len());
-    let page_rows = &filtered_rows[start..end];
+    if let Some(col_id) = sort_column() {
+        if let Some(col) = columns.iter().find(|c| c.id == col_id) {
+            let val = "".to_string();
+            filtered_indices.sort_by(|&a, &b| {
+                let a_val = data[a].get(col.id).unwrap_or(&val);
+                let b_val = data[b].get(col.id).unwrap_or(&val);
+                match sort_order() {
+                    SortOrder::Asc => a_val.cmp(b_val),
+                    SortOrder::Desc => b_val.cmp(a_val),
+                }
+            });
+        }
+    }
+
+    // Ensure page_size is at least 1 to prevent division by zero
+    let page_size_safe = page_size.max(1);
+    // Ensure at least 1 page to avoid confusing 'Page 1 of 0' message when empty
+    let total_pages = ((filtered_indices.len() as f64 / page_size_safe as f64).ceil() as usize).max(1);
+
+    // Clamp current page to valid range to prevent showing empty results
+    let current_page = page().min(total_pages.saturating_sub(1));
+    let start = current_page * page_size_safe;
+    let end = ((current_page + 1) * page_size_safe).min(filtered_indices.len());
+    let page_rows: Vec<_> = filtered_indices[start..end]
+        .iter()
+        .map(|&idx| data[idx].clone())
+        .collect();
+    let page_rows = &page_rows[..];
 
     let on_sort_column = move |id: &'static str| {
         if Some(id) == sort_column() {

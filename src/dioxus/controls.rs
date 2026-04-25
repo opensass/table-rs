@@ -21,6 +21,11 @@ pub fn PaginationControls(
         }
     };
 
+    // Pre-compute page indicator to avoid multiple string allocations
+    let page_indicator_text = texts.page_indicator
+        .replace("{current}", &(page() + 1).to_string())
+        .replace("{total}", &total_pages.to_string());
+
     rsx! {
         div { class: classes.pagination,
             button {
@@ -30,11 +35,7 @@ pub fn PaginationControls(
                 "{texts.previous_button}"
             }
             span {
-                {
-                    texts.page_indicator
-                        .replace("{current}", &(page() + 1).to_string())
-                        .replace("{total}", &total_pages.to_string())
-                }
+                "{ page_indicator_text }"
             }
             button {
                 class: classes.pagination_button,
