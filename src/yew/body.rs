@@ -47,6 +47,7 @@ use yew::prelude::*;
 ///         loading: false,
 ///         classes: Default::default(),
 ///         texts: Default::default(),
+///         on_row_click: None,
 ///     };
 ///    
 ///     html! {
