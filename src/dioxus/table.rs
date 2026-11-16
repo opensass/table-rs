@@ -81,7 +81,7 @@ pub fn Table(props: TableProps) -> Element {
         texts,
         classes,
         default_sort_column,
-        on_column_click,
+        on_row_click,
     } = props;
 
     let mut page = use_signal(|| 0_usize);
@@ -128,18 +128,18 @@ pub fn Table(props: TableProps) -> Element {
             });
         }
 
-        if let Some(col_id) = sort_column() {
-            if let Some(col) = columns.iter().find(|c| c.id == col_id) {
-                rows.sort_by(|a, b| {
-                    let val = "".to_string();
-                    let a_val = a.get(col.id).unwrap_or(&val);
-                    let b_val = b.get(col.id).unwrap_or(&val);
-                    match sort_order() {
-                        SortOrder::Asc => a_val.cmp(b_val),
-                        SortOrder::Desc => b_val.cmp(a_val),
-                    }
-                });
-            }
+        if let Some(col_id) = sort_column()
+            && let Some(col) = columns.iter().find(|c| c.id == col_id)
+        {
+            rows.sort_by(|a, b| {
+                let val = "".to_string();
+                let a_val = a.get(col.id).unwrap_or(&val);
+                let b_val = b.get(col.id).unwrap_or(&val);
+                match sort_order() {
+                    SortOrder::Asc => a_val.cmp(b_val),
+                    SortOrder::Desc => b_val.cmp(a_val),
+                }
+            });
         }
 
         rows
@@ -209,7 +209,7 @@ pub fn Table(props: TableProps) -> Element {
                     loading,
                     classes: classes.clone(),
                     texts: texts.clone(),
-                    on_column_click,
+                    on_row_click,
                 }
             }
             {pagination_controls}

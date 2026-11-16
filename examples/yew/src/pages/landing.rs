@@ -1,6 +1,7 @@
 use maplit::hashmap;
 use table_rs::yew::table::Table;
 use table_rs::yew::types::{Column, TableClasses, TableTexts};
+use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
@@ -457,8 +458,7 @@ pub fn example13() -> Html {
         loading_row: "text-center py-4",
         empty_row: "text-center py-4 text-gray-500",
         pagination: "flex justify-between items-center mt-4",
-        pagination_button:
-            "px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50",
+        pagination_button: "px-4 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50",
     };
 
     let styles = hashmap! {
@@ -478,14 +478,69 @@ pub fn example13() -> Html {
         <Table
             data={data}
             columns={columns}
-            page_size={5}
-            loading={false}
+            page_size=5
+            loading=false
             classes={classes}
             styles={styles}
-            paginate={true}
-            search={true}
+            paginate=true
+            search=true
             texts={texts}
         />
+    }
+}
+
+#[function_component(Example14)]
+pub fn example14() -> Html {
+    let data = vec![
+        hashmap! { "name" => "Ferris".to_string(), "email" => "ferris@opensass.org".to_string() },
+        hashmap! { "name" => "Ferros".to_string(), "email" => "ferros@opensass.org".to_string() },
+        hashmap! { "name" => "Crab".to_string(), "email" => "crab@opensass.org".to_string() },
+        hashmap! { "name" => "CrabFerris".to_string(), "email" => "crabferris@opensass.org".to_string() },
+    ];
+
+    let columns = vec![
+        Column {
+            id: "name",
+            header: "Name",
+            sortable: true,
+            ..Default::default()
+        },
+        Column {
+            id: "email",
+            header: "Email",
+            sortable: true,
+            ..Default::default()
+        },
+    ];
+
+    let window = web_sys::window()
+        .ok_or_else(|| JsValue::from_str("No global window exists"))
+        .unwrap();
+
+    let custom_classes = TableClasses {
+        table: "min-w-full table-auto text-sm text-left text-gray-700",
+        thead: "bg-blue-600 text-white",
+        tbody: "bg-white",
+        pagination: "flex justify-between items-center p-4",
+        search_input: "px-3 py-2 rounded-md border border-gray-300",
+        ..Default::default()
+    };
+
+    let on_row_click = Callback::from(move |_| {
+        window
+            .open_with_url_and_target("https://kit.opensass.org", "_blank")
+            .unwrap();
+    });
+
+    html! {
+        <div class="overflow-x-auto bg-gray-100 p-4 rounded-lg shadow-md">
+            <Table
+                data={data}
+                columns={columns}
+                classes={custom_classes}
+                on_row_click={on_row_click}
+            />
+        </div>
     }
 }
 
@@ -1091,6 +1146,73 @@ pub fn example13() -> Html {
 }"#
                 >
                     <Example13 />
+                </ExampleCard>
+                <ExampleCard
+                    title="Callback When a Row is Clicked"
+                    code=r#"use yew::prelude::*;
+use maplit::hashmap;
+use table_rs::yew::table::Table;
+use table_rs::yew::types::Column;
+use table_rs::yew::types::TableClasses;
+use wasm_bindgen::prelude::*;
+
+
+#[function_component(Example14)]
+pub fn example14() -> Html {
+    let data = vec![
+        hashmap! { "name" => "Ferris".to_string(), "email" => "ferris@opensass.org".to_string() },
+        hashmap! { "name" => "Ferros".to_string(), "email" => "ferros@opensass.org".to_string() },
+        hashmap! { "name" => "Crab".to_string(), "email" => "crab@opensass.org".to_string() },
+        hashmap! { "name" => "CrabFerris".to_string(), "email" => "crabferris@opensass.org".to_string() },
+    ];
+
+    let columns = vec![
+        Column {
+            id: "name",
+            header: "Name",
+            sortable: true,
+            ..Default::default()
+        },
+        Column {
+            id: "email",
+            header: "Email",
+            sortable: true,
+            ..Default::default()
+        },
+    ];
+
+    let window = web_sys::window()
+        .ok_or_else(|| JsValue::from_str("No global window exists"))
+        .unwrap();
+
+    let custom_classes = TableClasses {
+        table: "min-w-full table-auto text-sm text-left text-gray-700",
+        thead: "bg-blue-600 text-white",
+        tbody: "bg-white",
+        pagination: "flex justify-between items-center p-4",
+        search_input: "px-3 py-2 rounded-md border border-gray-300",
+        ..Default::default()
+    };
+
+    let on_row_click = Callback::from(move |_| {
+        window
+            .open_with_url_and_target("https://kit.opensass.org", "_blank")
+            .unwrap();
+    });
+
+    html! {
+        <div class="overflow-x-auto bg-gray-100 p-4 rounded-lg shadow-md">
+            <Table
+                data={data}
+                columns={columns}
+                classes={custom_classes}
+                on_row_click={on_row_click}
+            />
+        </div>
+    }
+}"#
+                >
+                    <Example14 />
                 </ExampleCard>
             </div>
         </div>

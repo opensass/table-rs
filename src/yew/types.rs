@@ -194,6 +194,10 @@ pub struct TableProps {
     /// Text labels for the table UI.
     #[prop_or_default]
     pub texts: TableTexts,
+
+    /// A callback when a row is clicked.
+    #[prop_or(None)]
+    pub on_row_click: Option<Callback<HashMap<String, String>>>,
 }
 
 /// Props for the table header including sorting logic.
@@ -281,4 +285,8 @@ pub struct TableBodyProps {
     /// Text labels used in the body (e.g., loading, empty).
     #[prop_or_default]
     pub texts: TableTexts,
+
+    /// A callback when a row is clicked.
+    #[prop_or(None)]
+    pub on_row_click: Option<Callback<HashMap<String, String>>>,
 }

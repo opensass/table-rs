@@ -1,4 +1,5 @@
 use crate::yew::types::TableBodyProps;
+use std::collections::HashMap;
 use yew::prelude::*;
 
 /// A table body component that handles rendering of table rows, empty state, and loading state.
@@ -13,6 +14,7 @@ use yew::prelude::*;
 ///   - `loading` - A boolean flag indicating whether the table is in a loading state.
 ///   - `classes` - A `TableClasses` object defining CSS class names for customization.
 ///   - `texts` - A `TableTexts` object defining UI text like loading or empty messages.
+///   - `on_row_click`: An optional callback when a row is clicked.
 ///
 /// # Returns
 /// (Html): A rendered `<tbody>` element, containing:
@@ -63,6 +65,7 @@ pub fn body(props: &TableBodyProps) -> Html {
         loading,
         classes,
         texts,
+        on_row_click,
     } = props;
 
     html! {
@@ -78,7 +81,22 @@ pub fn body(props: &TableBodyProps) -> Html {
                 } else {
                     html! {
                         for row in rows.iter() {
-                                <tr class={classes.row} role="row">
+                                <tr class={classes.row} role="row" onclick = {
+                                        let row1 = row.clone();
+                                        let converted_row: HashMap<String, String> = row1
+                                            .into_iter()
+                                            .map(|(k, v)| (k.to_string(), v))
+                                            .collect();
+                                        let on_row_click = on_row_click.clone();
+                                        Callback::from(move |_| {
+                                            let on_row_click = on_row_click.clone();
+                                            let converted_row = converted_row.clone();
+                                            if let Some(on_row_click) = on_row_click {
+                                                on_row_click.emit(converted_row);
+                                            }
+                                        })
+                                    }
+                                >
                                         for col in columns.iter() {
                                                 <td class={classes.body_cell} role="cell">{ row.get(col.id).unwrap_or(&"".to_string()) }</td>
                                         }

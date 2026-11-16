@@ -85,6 +85,7 @@ pub fn table(props: &TableProps) -> Html {
         paginate,
         search,
         texts,
+        on_row_click,
     } = props;
 
     let page = use_state(|| 0);
@@ -154,18 +155,18 @@ pub fn table(props: &TableProps) -> Html {
         });
     }
 
-    if let Some(col_id) = *sort_column {
-        if let Some(col) = columns.iter().find(|c| c.id == col_id) {
-            filtered_rows.sort_by(|a, b| {
-                let val = "".to_string();
-                let a_val = a.get(col.id).unwrap_or(&val);
-                let b_val = b.get(col.id).unwrap_or(&val);
-                match *sort_order {
-                    SortOrder::Asc => a_val.cmp(b_val),
-                    SortOrder::Desc => b_val.cmp(a_val),
-                }
-            });
-        }
+    if let Some(col_id) = *sort_column
+        && let Some(col) = columns.iter().find(|c| c.id == col_id)
+    {
+        filtered_rows.sort_by(|a, b| {
+            let val = "".to_string();
+            let a_val = a.get(col.id).unwrap_or(&val);
+            let b_val = b.get(col.id).unwrap_or(&val);
+            match *sort_order {
+                SortOrder::Asc => a_val.cmp(b_val),
+                SortOrder::Desc => b_val.cmp(a_val),
+            }
+        });
     }
 
     let total_pages = (filtered_rows.len() as f64 / *page_size as f64).ceil() as usize;
@@ -218,6 +219,7 @@ pub fn table(props: &TableProps) -> Html {
                     rows={page_rows.to_vec()}
                     loading={loading}
                     classes={classes.clone()}
+                    on_row_click={on_row_click}
                 />
             </table>
             { if *paginate {

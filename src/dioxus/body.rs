@@ -15,7 +15,7 @@ use std::collections::HashMap;
 /// - `loading`: A `bool` flag that, when true, displays a loading message instead of data rows.
 /// - `classes`: A `TableClasses` struct for customizing the CSS class names of the body, rows, and cells.
 /// - `texts`: A `TableTexts` struct that provides custom text for the loading and empty states.
-/// - `on_column_click`: An optional callback when a row is clicked.
+/// - `on_row_click`: An optional callback when a row is clicked.
 ///
 /// # Behavior
 /// - If `loading` is `true`, a single row with a loading message is shown spanning all columns.
@@ -66,7 +66,7 @@ pub fn TableBody(
     loading: bool,
     classes: TableClasses,
     texts: TableTexts,
-    on_column_click: Option<EventHandler<HashMap<&'static str, String>>>,
+    on_row_click: Option<EventHandler<HashMap<&'static str, String>>>,
 ) -> Element {
     let content = if loading {
         rsx! {
@@ -89,8 +89,8 @@ pub fn TableBody(
                     onclick: {
                         let row1 = row.clone();
                         move |_| {
-                            if let Some(on_column_click) = on_column_click {
-                                on_column_click.call(row1.clone());
+                            if let Some(on_row_click) = on_row_click {
+                                on_row_click.call(row1.clone());
                             }
                         }
                     },
