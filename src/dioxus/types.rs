@@ -29,6 +29,14 @@ pub struct Column {
     /// Optional CSS classes for the column header.
     #[props(default)]
     pub class: Option<&'static str>,
+
+    /// Optional inline styles for the column cell.
+    #[props(default)]
+    pub cell_style: Option<&'static str>,
+
+    /// Optional CSS classes for the column cell.
+    #[props(default)]
+    pub cell_class: Option<&'static str>,
 }
 
 /// Text labels for table UI elements.
@@ -165,6 +173,15 @@ pub struct TableProps {
     /// CSS classes for styling different parts of the table.
     #[props(default)]
     pub classes: TableClasses,
+
+    /// Default sort column when the table is initially rendered
+    #[props(default)]
+    pub default_sort_column: Option<&'static str>,
+
+    /// optional event handler when a column has been clicked
+    /// will pass in the content of the column
+    #[props(default)]
+    pub on_column_click: Option<EventHandler<HashMap<&'static str, String>>>,
 }
 
 /// Sort direction (ascending or descending).
