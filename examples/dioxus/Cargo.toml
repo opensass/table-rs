@@ -1,12 +1,12 @@
 [package]
 name = "table-rs-dioxus-example"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-dioxus = { version = "0.7.1", features = ["web"] }
+dioxus = { version = "0.7.10", features = ["web"] }
 table-rs = { path = "../../", features = ["dio"] }
-dioxus-logger = "0.7.1"
+dioxus-logger = "0.7.10"
 maplit = "1.0.2"
 
 [profile]

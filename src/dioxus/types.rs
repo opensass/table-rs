@@ -178,10 +178,10 @@ pub struct TableProps {
     #[props(default)]
     pub default_sort_column: Option<&'static str>,
 
-    /// optional event handler when a column has been clicked
-    /// will pass in the content of the column
+    /// optional event handler when a row has been clicked
+    /// will pass in the content of the row
     #[props(default)]
-    pub on_column_click: Option<EventHandler<HashMap<&'static str, String>>>,
+    pub on_row_click: Option<EventHandler<HashMap<&'static str, String>>>,
 }
 
 /// Sort direction (ascending or descending).
